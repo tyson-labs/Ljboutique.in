@@ -1,0 +1,150 @@
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lj Boutique</title>
+
+  <link rel="stylesheet" href="styles.css">  
+</head>
+<body>
+    
+    <!-- NEW ADMIN TOGGLE BUTTON -->
+    <div class="admin-toggle" onclick="toggleSidebar()">
+        <!-- Three dots icon -->
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+    </div>
+
+    <!-- NEW ADMIN SIDEBAR -->
+    <aside id="adminSidebar" class="sidebar">
+        <div class="sidebar-header">
+            <h2>Admin Panel</h2>
+            <button class="close-btn" onclick="toggleSidebar()">X</button>
+        </div>
+        
+        <!-- Login View -->
+        <div id="loginView" class="admin-view">
+            <div class="admin-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 17a2 2 0 0 0-2-2h-3V7a1 1 0 0 0-1-1H7v2a2 2 0 0 1-2 2H3a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h2a2 2 0 0 1 2 2v2h3a2 2 0 0 0 2-2v-3h3a2 2 0 0 0 2-2z"/><path d="M7 15v-3"/><path d="M7 12v-3"/></svg>
+            </div>
+            <h3>Admin Login</h3>
+            <form id="loginForm" class="login-form">
+                <input type="text" id="adminUsername" placeholder="Username " required>
+                <input type="password" id="adminPassword" placeholder="Password " required>
+                <button type="submit">Login</button>
+            </form>
+            <p id="loginMessage" class="message error-message"></p>
+        </div>
+
+        <!-- Product Addition View (Hidden initially) -->
+        <div id="productAddView" class="admin-view hidden">
+            <h3>Add New Garment</h3>
+            <form id="productAddForm" class="product-form">
+                <input type="text" id="newTitle" placeholder="Title (e.g., Anarkali Suit)" required>
+                <input type="text" id="newImg" placeholder="Image File (e.g., image.jpg)" value="placeholder.jpg" required>
+                <div class="form-row">
+                    <input type="text" id="newRate" placeholder="Rate (e.g., ₹1,200)" required>
+                    <input type="text" id="newPrice" placeholder="Price (optional, e.g., ₹999)">
+                </div>
+                <div class="form-row">
+                    <input type="text" id="newSize" placeholder="Size (e.g., S, M, L)" required>
+                    <input type="text" id="newArtnum" placeholder="ARTNUM (e.g., ANK001)" required>
+                </div>
+                <input type="text" id="newStyle" placeholder="Style (e.g., A-line, Straight, Box cut)" required>
+                <input type="text" id="newMaterial" placeholder="Material (e.g., Pure Cotton, Silk)">
+
+                <button type="submit" class="submit-btn">Add Product to Gallery</button>
+            </form>
+            <p id="productAddMessage" class="message success-message"></p>
+            <button class="logout-btn" onclick="logoutAdmin()">Logout</button>
+        </div>
+    </aside>
+
+    <header>
+        <h1>Lj Boutique</h1>
+        <div class="contact">
+            <div>📧 Email: <span>ljboutique@gmail.com</span></div>
+            <div>📞 Phone: <span>9539680161</span></div>
+            <div>📍 Location: <span>Ernakulam</span></div>
+        </div>
+    </header>
+	
+    <!-- Gallery and existing popup below -->
+    <div class="gallery" id="gallery">
+        <!-- Existing Product Items -->
+        <div class="item">
+            <img src="churidhar model.jpg" alt="churidhar model" 
+                 data-size="XXL" 
+                 data-rate="₹320" 
+                 data-material="Gold Ajrakh cotton" 
+                 data-style="churidhar model" />
+				 
+            <div class="title">churidhar modelt</div>
+			<div class="artnumdesc" id="mode1"></div>
+            <div class="price">₹320</div>
+			<div class="artnum">CHRGACRD10</div>
+            <div class="actions">
+                <button onclick="openPopupFromCard(this)">View Details</button>
+            </div>
+        </div>
+
+        <div class="item">
+            <img src="Round yoke Churidhar model.jpg" alt="Round yoke Churidhar" 
+                 data-size="Medium" 
+                 data-rate="₹290" 
+                 data-material="cotton meterial (vardhaman)" 
+                 data-style="Round yoke" />
+            <div class="title">Round yoke</div>
+            <div class="price">₹290</div>
+			<div class="artnum">CHRGACRD10</div>
+            <div class="actions">
+                <button onclick="openPopupFromCard(this)">View Details</button>
+            </div>
+        </div>
+
+        <div class="item">
+            <img src="Box cut .jpg" alt="Box cut churidhar model" 
+                 data-size="Medium" 
+                 data-rate="₹290" 
+                 data-material="cotton (RahulTexo Print)" 
+                 data-style="Box cut" />
+            <div class="title">Box cut churidhar model</div>
+            <div class="price">₹290</div>
+			<div class="artnum">CHRGACRD10</div>
+            <div class="actions">
+                <button onclick="openPopupFromCard(this)">View Details</button>
+            </div>
+        </div>
+		
+		<div class="item">
+            <img src="churidhar type.jpg" alt="churidhar type" 
+                 data-size="XL" 
+                 data-rate="₹310" 
+                 data-material="Ajrakh front Cotton" 
+                 data-style="churidhar type" />
+            <div class="title">churidhar type</div>
+            <div class="price">₹310</div>
+			<div class="artnum">CHRGACRD10</div>
+            <div class="actions">
+                  <button onclick="openPopupFromCard(this)">View Details</button>
+           </div>
+        </div>
+        
+    </div> 
+    
+    <div id="popup" role="dialog" aria-modal="true" aria-hidden="true">
+        <div class="popup-content">
+            <img id="popup-img" src="" alt="Product image" />
+            <div class="details" id="popup-details">
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Font Awesome for the admin icon -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="scripts.js"></script> 
+	 
+</body>
+</html>

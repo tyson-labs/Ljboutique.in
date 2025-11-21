@@ -1,0 +1,303 @@
+/* CSS Variables for easy color changes */
+:root{
+    --brand-gold: #C19A6B;
+    --cream:#ffddd0;
+    --text-black: #333;
+    --brand-pink: #ff5aa5;
+    --light-bg: #f9f9f9;
+    --lavender-floral: #f0f4f7;
+    --pink: var(--brand-pink);
+    --text-pink: var(--brand-pink);
+}
+
+/* Global Reset and Base Styles */
+*{box-sizing:border-box}
+body {
+    margin: 0;
+    font-family: Baskerville Old Face;
+    background: var(--light-bg);
+    color: var(--text-black);
+    position: relative; /* Needed for fixed/absolute positioning children */
+}
+
+/* -------------------------------------- */
+/* NEW ADMIN SIDEBAR STYLES */
+/* -------------------------------------- */
+
+.admin-toggle {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 30px;
+    height: 30px;
+    background: var(--brand-gold);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 1000; /* Above everything else */
+}
+
+.admin-toggle .dot {
+    display: block;
+    width: 4px;
+    height: 4px;
+    background: white;
+    border-radius: 50%;
+    margin: 1px 0;
+}
+
+.sidebar {
+    height: 100%;
+    width: 500px; /* Fixed width */
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    background-color: #fff;
+    overflow-x: hidden;
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(-100%); /* Hidden by default */
+    box-shadow: 2px 0 10px rgba(0,0,0,0.15);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar.open {
+    transform: translateX(0); /* Visible when open */
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--brand-gold);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+.sidebar-header h2 {
+    color: var(--brand-pink);
+    margin: 0;
+    font-size: 1.5em;
+}
+
+.admin-view {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+.admin-view.hidden {
+    display: none;
+}
+
+/* Login/Product Forms */
+.admin-icon {
+    text-align: center;
+    margin: 15px 0 25px;
+    color: var(--brand-gold);
+}
+.login-form, .product-form {
+    display: grid;
+    gap: 10px;
+}
+.login-form input, .product-form input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+.login-form button {
+    background: var(--brand-gold);
+    color: white;
+    font-weight: bold;
+    margin-top: 10px;
+}
+.form-row {
+    display: flex;
+    gap: 10px;
+}
+.form-row input {
+    flex: 1;
+}
+
+.message {
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    margin-top: 15px;
+    font-weight: bold;
+}
+.error-message {
+    background: #ffe0e0;
+    color: #cc0000;
+}
+.success-message {
+    background: #e0ffe0;
+    color: #008000;
+}
+
+.logout-btn {
+    background: #ccc;
+    color: var(--text-black);
+    margin-top: auto; /* Push to the bottom */
+}
+
+
+/* -------------------------------------- */
+/* EXISTING STYLES (Adjusted Header Padding) */
+/* -------------------------------------- */
+
+/* Header Styles */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* Added left padding to clear the admin toggle button */
+    padding: 20px 20px 20px 70px; 
+    background: var(--lavender-floral); 
+    border-bottom: 2px solid var(--brand-gold);
+}
+
+header h1 {
+    color: var(--pink); 
+    margin: 0;
+    font-size: 72px; 
+    font-weight: bold;
+    font-family: "Baskerville Old Face";
+}
+
+/* Contact Info Styles */
+.contact {
+    text-align: right;
+    font-size: 14px;
+    line-height: 1.4;
+}
+.contact div{
+    color: var(--text-black);
+}
+.contact span{
+    font-weight: bold;
+}
+
+/* Gallery/Product Grid Styles */
+.gallery {
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 20px;
+    padding: 20px;
+    display: grid; 
+}
+.item {
+    border: 1px solid #eee;
+    padding: 10px;
+    text-align: center;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08); 
+    transition: transform 0.2s;
+}
+.item:hover {
+    transform: translateY(-3px); 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.item img {
+    width: 100%;
+    height: 220px; 
+    object-fit: cover;
+    border-radius: 6px;
+    display:block;
+    cursor: pointer;
+}
+.item .title{margin-top:8px;font-weight:700;color:var(--text-black)}
+.item .price{color:var(--text-pink);margin-top:6px;font-size:1.1em;font-weight:bold}
+.actions{display:flex;gap:8px;justify-content:center;margin-top:10px}
+
+/* Button Styles */
+button {
+    background: var(--brand-pink);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s;
+}
+button:hover {
+    background: #e54992; 
+}
+button.close-btn{
+    background: gray;
+}
+button.close-btn:hover{
+    background: #666;
+}
+
+/* Popup Styles */
+#popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7); 
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    padding: 20px;
+}
+.popup-content {
+    background: white;
+    color: var(--text-black);
+    padding: 30px;
+    display: flex;
+    width: 100%;
+    max-width: 900px;
+    border-radius: 8px;
+    gap: 30px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+.popup-content img {
+    width: 50%;
+    height: auto;
+    border-radius: 6px;
+    object-fit: contain; 
+}
+.details {
+    width: 50%;
+    padding-left: 0;
+}
+.details h2{
+    color: var(--text-pink);
+    margin-top: 0;
+    font-size: 1.6em;
+    margin-bottom: 15px;
+}
+.details p {
+    margin: 8px 0;
+    font-size: 1.1em;
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 1200px) {
+    .gallery {grid-template-columns: repeat(3, 1fr);}
+}
+@media (max-width: 900px){
+    .gallery{grid-template-columns: repeat(2, 1fr)}
+    .popup-content{flex-direction: column; max-width: 500px;}
+    .popup-content img{width: 100%; height: 300px;}
+    .details{width: 100%; padding-left: 0;}
+}
+@media (max-width: 500px){
+    .gallery{grid-template-columns: 1fr;}
+    header {
+        flex-direction: column; 
+        text-align: center;
+        padding-left: 20px; /* Reset padding for mobile */
+    }
+    .contact {text-align: center; margin-top: 10px;}
+}
