@@ -8,17 +8,15 @@
     body { 
         margin: 0; 
         font-family: Arial, sans-serif;
-        /* STICKY FOOTER: Body is the flex container */
         min-height: 100vh;
         display: flex;
         flex-direction: column;
     }
 
-    /* NEW: Container to push the footer down */
     .content-wrapper {
-        flex-grow: 1; /* This element takes up all available vertical space */
-        display: flex; /* Make the wrapper a flex container itself */
-        flex-direction: column; /* Stack its children (sections) vertically */
+        flex-grow: 1;
+        display: flex; 
+        flex-direction: column;
     }
 
     .top-strip, .main-strip { display: grid; padding: 10px 20px; align-items:center; }
@@ -30,25 +28,19 @@
     .cart-icon { text-align:right; font-size:20px; }
 
     .welcome-section { 
-        /* Removing old grid, using flex properties from content-wrapper */
         display:flex;
         justify-content:center;
         align-items:center;
         background:white;
         padding:40px 0;
     }
-    .welcome-left { display:flex; flex-direction:column; justify-content:center; gap:20px }
-    .welcome-left h1 { margin:0; font-size:32px }
-    .welcome-left button { padding:12px 20px; border:none; background:black; color:white; cursor:pointer; font-size:16px }
-    .welcome-right { background:#f5e9d6; display:flex; justify-content:center; align-items:center }
-
     .best-sellers { text-align:center; padding:50px 20px }
     .best-sellers h2 { margin:0; font-size:28px; font-weight:bold }
     .best-sellers p { margin-top:10px; font-size:18px; color:#555 }
 
-    .gallery { margin:40px auto; display:grid; grid-template-columns: repeat(3, 1fr); gap:20px; max-width:1000px }
+    .gallery { margin:40px auto; display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:20px; max-width:1000px }
     .product-card { background:#eee; padding:10px; cursor:pointer; text-align:center; border-radius:6px }
-    .product-card img { width:100%; height:auto; display:block }
+    .product-card img { width:100%; height:auto; display:block; aspect-ratio: 1 / 1.2; object-fit: cover;}
     .product-card p { font-weight:bold; margin-top:8px }
 
     .shop-bestsellers { margin-top:40px; font-size:20px; font-weight:600; text-decoration:underline; cursor:pointer }
@@ -66,68 +58,144 @@
     input, select { padding:8px; border:1px solid #ccc; border-radius:4px }
     button.primary { padding:12px; background:black; color:white; border:none; cursor:pointer }
     button.whatsapp { padding:12px; background:green; color:white; border:none; cursor:pointer }
+    
+    /* Admin specific styles */
+    .admin-product-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 15px 0;
+        border-bottom: 1px dashed #ccc;
+    }
+    .admin-product-item:last-child { border-bottom: none; }
+    .admin-product-item img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+    .admin-product-item input {
+        flex-grow: 1;
+        max-width: 150px;
+    }
+    .admin-product-item button {
+        background: #007bff;
+        color: white;
+        padding: 8px 12px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .form-group {
+        margin-bottom: 15px;
+        display: flex;
+        flex-direction: column;
+    }
+    .form-group label {
+        margin-bottom: 5px;
+        font-weight: bold;
+        font-size: 0.9em;
+    }
+    .form-group input {
+        width: 100%;
+    }
   </style>
 </head>
 <body>
   <header>
     <div class="top-strip">
       <div>🔍 Search</div>
-      <div style="text-align:right;">Login / Register</div>
+      <div id="login-area" style="text-align:right;">
+        <a onclick="openLoginPopup()" style="cursor: pointer;">Login / Register</a>
+      </div>
     </div>
     <div class="main-strip">
       <div class="menu">
         <a id="menu-shop">Shop</a>
         <a>Sale</a>
-        <a>Customer Care</a>
+        <a href="https://wa.me/9539680161" target="_blank">Customer Care</a>
         <a>Stores</a>
       </div>
       <div class="brand">Lj Boutique</div>
-      <div class="cart-icon">🛒</div>
+      <div class="cart-icon">
+        <a onclick="openCartPopup()" style="cursor:pointer;">
+          🛒 <span id="cart-count"></span>
+        </a>
+      </div>
     </div>
   </header>
 
   <div class="content-wrapper">
 
-    <section class="welcome-section" style="
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      background:white;
-      padding:40px 0;
-  ">
-      <div style="text-align:center;">
-          <img src="logo.jpeg" 
-              alt="Logo" 
-              style="width:320px; height:auto; display:block; margin:0 auto;">
-      </div>
+    <div id="main-shop-content">
+        <section class="welcome-section">
+            <div style="text-align:center;">
+                <img src="logo.jpeg" 
+                    alt="Logo" 
+                    style="width:320px; height:auto; display:block; margin:0 auto;">
+            </div>
+        </section>
+
+        <section class="best-sellers">
+            <h2>OUR BEST SELLERS</h2>
+            <p>Don't Miss Out</p>
+            <div class="gallery" id="best-sellers-gallery">
+                </div>
+            <div class="shop-bestsellers" id="open-bestsellers">Shop All Products</div>
+        </section>
+
+        <div id="bestseller-page" style="display:none; padding:40px 20px;">
+            <h2>ALL PRODUCTS</h2>
+            <div class="gallery" id="all-products-gallery">
+                </div>
+        </div>
+    </div> 
+    
+    <section id="admin-page" style="display:none; padding: 50px; text-align: left; background: #f0f0f0; flex-grow: 1;">
+        <div style="max-width: 800px; margin: 0 auto; padding: 30px; border: 1px solid #ccc; background: white; border-radius: 8px;">
+            <h2 style="color: #4CAF50; text-align: center;">Admin Dashboard 🔑</h2>
+            <p style="text-align: center; margin-bottom: 30px;">Manage your product catalog below.</p>
+            
+            <hr>
+            
+            <h3>Add New Product</h3>
+            <div id="add-product-form" style="padding: 15px; border: 1px solid #eee; margin-bottom: 20px; border-radius: 4px; background: #fafafa;">
+                <div style="display: flex; gap: 15px;">
+                    <div class="form-group" style="flex: 2;">
+                        <label for="new-product-name">Product Name</label>
+                        <input type="text" id="new-product-name" placeholder="E.g., Silk Saree 15" required>
+                    </div>
+                    <div class="form-group" style="flex: 2;">
+                        <label for="new-product-img">Image File Name</label>
+                        <input type="text" id="new-product-img" placeholder="E.g., saree15.jpg" required>
+                    </div>
+                    <div class="form-group" style="flex: 1; min-width: 100px;">
+                        <label for="new-product-price">Price (₹)</label>
+                        <input type="number" id="new-product-price" placeholder="E.g., 2500" min="1" required>
+                    </div>
+                </div>
+                <button class="primary" onclick="addNewProduct()" style="width: 100%; background: #4CAF50; margin-top: 10px;">
+                    Add Product to Gallery
+                </button>
+            </div>
+            
+            <hr>
+
+            <h3>Edit Existing Products (Gallery Update)</h3>
+            <p style="font-size: 0.9em; color: #555;">*Enter the exact file name (e.g., `modelX.jpg`) for the image source to edit.</p>
+            
+            <div id="admin-product-list">
+                </div>
+
+            <hr style="margin-top: 30px;">
+
+            <div style="text-align: center; margin-top: 20px;">
+                <button onclick="openShopContent();" class="primary" style="background: #007bff; margin-right: 10px;">Go to Shop (Stay Logged In)</button>
+                <button onclick="logout();" class="primary" style="background: #cc0000;">Logout and Go to Shop</button>
+            </div>
+        </div>
     </section>
 
-
-    <section class="best-sellers">
-      <h2>OUR BEST SELLERS</h2>
-      <p>Don't Miss Out</p>
-      <div class="gallery">
-        <div class="product-card" onclick="showDetails('model1.jpg',999)"><img src="model1.jpg" alt="product1"><p>₹999</p></div>
-        <div class="product-card" onclick="showDetails('model2.jpg',1299)"><img src="model2.jpg" alt="product2"><p>₹1299</p></div>
-        <div class="product-card" onclick="showDetails('Box cut .jpg',1199)"><img src="Box cut .jpg" alt="product3"><p>₹1199</p></div>
-        <div class="product-card" onclick="showDetails('churidhar model.jpg',1499)"><img src="churidhar model.jpg" alt="product4"><p>₹1499</p></div>
-      </div>
-      <div class="shop-bestsellers" id="open-bestsellers">Shop Best Sellers</div>
-    </section>
-
-    <div id="bestseller-page" style="display:none; padding:40px 20px;">
-      <h2>BEST SELLERS</h2>
-      <div class="gallery" id="product-list">
-        <div class="product-card" onclick="showDetails('model5.jpg',999)"><img src="model5.jpg" alt="p1"><p>₹999</p></div>
-        <div class="product-card" onclick="showDetails('model6.jpg',1299)"><img src="model6.jpg" alt="p2"><p>₹1299</p></div>
-        <div class="product-card" onclick="showDetails('model7.jpg',1199)"><img src="model7.jpg" alt="p3"><p>₹1199</p></div>
-        <div class="product-card" onclick="showDetails('model1.jpg',1499)"><img src="model1.jpg" alt="p4"><p>₹1499</p></div>
-      <div class="product-card" onclick="showDetails('model1.jpg',999)"><img src="model1.jpg" alt="product1"><p>₹999</p></div>
-        <div class="product-card" onclick="showDetails('model2.jpg',1299)"><img src="model2.jpg" alt="product2"><p>₹1299</p></div>
-        <div class="product-card" onclick="showDetails('Box cut .jpg',1199)"><img src="Box cut .jpg" alt="product3"><p>₹1199</p></div>
-        <div class="product-card" onclick="showDetails('churidhar model.jpg',1499)"><img src="churidhar model.jpg" alt="product4"><p>₹1499</p></div>
-      </div>
-    </div>
   </div> 
   <footer>
     <h3>Lj Boutique</h3>
@@ -136,46 +204,472 @@
     <p>Email: example@mail.com</p>
   </footer>
 
+  <div id="login-popup" class="overlay">
+    <div class="card small-card" style="position:relative;">
+      <button class="close-btn" onclick="closeLoginPopup()">X</button>
+      <h3 style="margin-top: 0;">Register / Login</h3>
+      <input id="login-name" placeholder="Name" style="width:100%; margin-bottom:8px;" />
+      <input id="login-number" type="tel" placeholder="Mobile Number" style="width:100%; margin-bottom:8px;" />
+      <input id="login-email" type="email" placeholder="Email (Optional)" style="width:100%; margin-bottom:8px;" />
+      <input id="login-password" type="password" placeholder="Password" style="width:100%; margin-bottom:12px;" />
+      <button class="primary" onclick="handleLoginSubmit()">Register / Login</button>
+    </div>
+  </div>
+
   <div id="img-details-popup" class="overlay">
     <div class="card small-card" style="position:relative;">
       <button class="close-btn" onclick="closeImgDetails()">X</button>
       <img id="detail-img" src="" style="width:100%; height:auto; margin-bottom:12px;" />
+      <p id="detail-name" style="font-weight:bold; margin:6px 0; font-size: 1.1em;"></p>
       <p id="detail-price" style="font-weight:bold; margin:6px 0"></p>
+      <input type="hidden" id="detail-product-id">
       <h4>Select Size</h4>
       <select id="detail-size" style="width:100%; margin-bottom:12px;">
         <option>M</option><option>L</option><option>XL</option><option>XXL</option><option>XXXL</option>
       </select>
-      <button class="primary" onclick="openBuyNow()">Buy Now</button>
+      <button class="primary" onclick="handleAddToCart()" style="width: 100%; margin-bottom: 8px;">Add to Cart</button>
+      <button class="primary" onclick="handleBuyNow()" style="width: 100%; background: #4CAF50;">Buy Now</button>
+    </div>
+  </div>
+
+  <div id="cart-popup" class="overlay">
+    <div class="card" style="position:relative; max-width: 500px;">
+      <button class="close-btn" onclick="closeCartPopup()">X</button>
+      <h3 style="margin-top: 0;">Your Shopping Cart</h3>
+      <div id="cart-items-list" style="max-height: 60vh; overflow-y: auto; padding-right: 15px;">
+        <p id="empty-cart-message">Your cart is empty.</p>
+      </div>
+      <div style="border-top: 1px solid #eee; padding-top: 15px; margin-top: 15px;">
+          <p style="font-size: 1.2em; font-weight: bold;">Total: ₹<span id="cart-total-price">0</span></p>
+          <button class="primary" onclick="openCheckoutForm()" style="width: 100%;" disabled id="checkout-btn">Proceed to Checkout</button>
+      </div>
     </div>
   </div>
 
   <div id="popup" class="overlay">
     <div class="card" style="position:relative;">
       <button class="close-btn" onclick="closePopup()">X</button>
-      <div class="grid-2">
-        <div>
-          <img id="popup-img" src="" style="width:100%; height:auto; margin-bottom:8px;" />
-          <p id="popup-size" style="margin:6px 0"></p>
-          <p id="popup-price" style="margin:6px 0"></p>
-        </div>
-        <div>
-          <h3>Delivery Address</h3>
-          <input id="addr-name" placeholder="Name" style="width:100%; margin-bottom:8px;" />
-          <input id="addr-number" placeholder="Number" style="width:100%; margin-bottom:8px;" />
-          <input id="addr-district" placeholder="District" style="width:100%; margin-bottom:8px;" />
-          <input id="addr-state" placeholder="State" style="width:100%; margin-bottom:8px;" />
-          <input id="addr-post" placeholder="Post" style="width:100%; margin-bottom:8px;" />
-          <input id="addr-pincode" placeholder="Pincode" style="width:100%; margin-bottom:8px;" />
-          <input id="addr-house" placeholder="House Number" style="width:100%; margin-bottom:8px;" />
-          <input id="addr-qty" type="number" min="1" value="1" placeholder="Quantity" style="width:100%; margin-bottom:8px;" />
-          <button class="primary" id="buy-now-btn">Buy Now</button>
-          <button class="whatsapp" id="send-wa-btn" style="margin-top:8px;">Send on WhatsApp</button>
-        </div>
+      <div>
+        <h3>Delivery Address</h3>
+        <input id="addr-name" placeholder="Name" style="width:100%; margin-bottom:8px;" />
+        <input id="addr-number" placeholder="Number" style="width:100%; margin-bottom:8px;" />
+        <input id="addr-district" placeholder="District" style="width:100%; margin-bottom:8px;" />
+        <input id="addr-state" placeholder="State" style="width:100%; margin-bottom:8px;" />
+        <input id="addr-post" placeholder="Post" style="width:100%; margin-bottom:8px;" />
+        <input id="addr-pincode" placeholder="Pincode" style="width:100%; margin-bottom:8px;" />
+        <input id="addr-house" placeholder="House Number" style="width:100%; margin-bottom:8px;" />
+        <button class="primary" id="buy-now-btn">Confirm Order (Final Step)</button>
+        <button class="whatsapp" id="send-wa-btn" style="margin-top:8px;">Send Order on WhatsApp</button>
       </div>
     </div>
   </div>
 
   <script>
+    // --- CENTRAL PRODUCT DATA ---
+    const defaultProducts = [
+        { id: 1, img: 'model1.jpg', price: 999, name: 'Traditional Model 1' },
+        { id: 2, img: 'model2.jpg', price: 1299, name: 'Designer Piece 2' },
+        { id: 3, img: 'Box cut .jpg', price: 1199, name: 'Box Cut Style 3' },
+        { id: 4, img: 'churidhar model.jpg', price: 1499, name: 'Churidhar Set 4' },
+        { id: 5, img: 'model5.jpg', price: 999, name: 'Simple Kurta 5' }, 
+        { id: 6, img: 'model6.jpg', price: 1299, name: 'Fancy Suit 6' },
+        { id: 7, img: 'model7.jpg', price: 1199, name: 'Printed Design 7' },
+        { id: 8, img: 'model1.jpg', price: 1499, name: 'Traditional Model 8' }, 
+        { id: 9, img: 'model1.jpg', price: 999, name: 'Traditional Model 9' },
+        { id: 10, img: 'model2.jpg', price: 1299, name: 'Designer Piece 10' },
+        { id: 11, img: 'Box cut .jpg', price: 1199, name: 'Box Cut Style 11' },
+        { id: 12, img: 'churidhar model.jpg', price: 1499, name: 'Churidhar Set 12' },
+    ];
+    
+    // Load products from local storage, or use defaults
+    let products = JSON.parse(localStorage.getItem('products')) || defaultProducts;
+    
+    // --- PRODUCT UTILITIES ---
+    function getNextProductId() {
+        if (products.length === 0) return 1;
+        // Find the maximum ID and add 1
+        const maxId = products.reduce((max, product) => Math.max(max, product.id), 0);
+        return maxId + 1;
+    }
+    
+    function saveProducts() {
+        localStorage.setItem('products', JSON.stringify(products));
+        renderProducts(); // Re-render shop
+    }
+    
+    // --- SHOP RENDERING ---
+
+    function renderProducts() {
+        const bestSellersGallery = document.getElementById('best-sellers-gallery');
+        const allProductsGallery = document.getElementById('all-products-gallery');
+        
+        bestSellersGallery.innerHTML = '';
+        allProductsGallery.innerHTML = '';
+
+        const productHtml = products.map(product => `
+            <div class="product-card" onclick="showDetails(${product.id})">
+                <img src="${product.img}" alt="${product.name}">
+                <p>₹${product.price}</p>
+            </div>
+        `).join('');
+
+        // Display the first 4 products in the Best Sellers section
+        bestSellersGallery.innerHTML = products.slice(0, 4).map(product => `
+            <div class="product-card" onclick="showDetails(${product.id})">
+                <img src="${product.img}" alt="${product.name}">
+                <p>₹${product.price}</p>
+            </div>
+        `).join('');
+        
+        // Display all products in the All Products section
+        allProductsGallery.innerHTML = productHtml;
+
+        // If on the admin page, also re-render the admin list
+        if (localStorage.getItem('isAdmin') === 'true' && document.getElementById('admin-page').style.display === 'flex') {
+            renderAdminProductList();
+        }
+    }
+
+
+    // --- ADMIN DASHBOARD FUNCTIONS ---
+    function renderAdminProductList() {
+        const adminList = document.getElementById('admin-product-list');
+        adminList.innerHTML = products.map(product => `
+            <div class="admin-product-item">
+                <img src="${product.img}" alt="${product.name}">
+                <div style="flex-basis: 150px;">
+                    <strong>ID: ${product.id}</strong><br>
+                    <input type="text" id="admin-name-${product.id}" value="${product.name}" placeholder="Product Name" style="margin-top: 5px;">
+                </div>
+                <input type="text" id="admin-img-${product.id}" value="${product.img}" placeholder="Image File Name" style="flex-grow: 1;">
+                <input type="number" id="admin-price-${product.id}" value="${product.price}" placeholder="Price (₹)" min="100" style="max-width: 100px;">
+                <button onclick="updateProduct(${product.id})">Update Product</button>
+            </div>
+        `).join('');
+    }
+
+    function updateProduct(productId) {
+        const newName = document.getElementById(`admin-name-${productId}`).value.trim();
+        const newImg = document.getElementById(`admin-img-${productId}`).value.trim();
+        const newPrice = parseFloat(document.getElementById(`admin-price-${productId}`).value);
+
+        if (!newName || !newImg || isNaN(newPrice) || newPrice <= 0) {
+            alert('Please enter a valid name, image file name, and price.');
+            return;
+        }
+
+        const productIndex = products.findIndex(p => p.id === productId);
+
+        if (productIndex !== -1) {
+            // Update the product data
+            products[productIndex].name = newName;
+            products[productIndex].img = newImg;
+            products[productIndex].price = newPrice;
+            
+            saveProducts();
+            alert(`Product ID ${productId} updated successfully!`);
+        } else {
+            alert(`Error: Product ID ${productId} not found.`);
+        }
+    }
+    
+    function addNewProduct() {
+        const newName = document.getElementById('new-product-name').value.trim();
+        const newImg = document.getElementById('new-product-img').value.trim();
+        const newPrice = parseFloat(document.getElementById('new-product-price').value);
+
+        if (!newName || !newImg || isNaN(newPrice) || newPrice <= 0) {
+            alert('Please enter a valid product name, image file name, and a price greater than 0.');
+            return;
+        }
+
+        const newId = getNextProductId();
+        
+        const newProduct = {
+            id: newId,
+            name: newName,
+            img: newImg,
+            price: newPrice
+        };
+        
+        products.push(newProduct);
+        saveProducts();
+        
+        // Clear form after adding
+        document.getElementById('new-product-name').value = '';
+        document.getElementById('new-product-img').value = '';
+        document.getElementById('new-product-price').value = '';
+
+        alert(`New Product "${newName}" (ID: ${newId}) added successfully!`);
+    }
+
+    // --- CART DATA AND UTILITIES (Functions remain the same, adapted to use product object) ---
+    let cart = JSON.parse(localStorage.getItem('shoppingCart')) || [];
+
+    function saveCart() {
+        localStorage.setItem('shoppingCart', JSON.stringify(cart));
+    }
+
+    function updateCartCount() {
+        const cartCount = cart.reduce((total, item) => total + item.qty, 0);
+        document.getElementById('cart-count').innerText = cartCount > 0 ? `(${cartCount})` : '';
+    }
+
+    function addItemToCart(productId, size) {
+        const product = products.find(p => p.id === productId);
+        if (!product) return;
+        
+        const itemIdentifier = productId + size;
+        
+        const existingItem = cart.find(item => item.id === itemIdentifier);
+
+        if (existingItem) {
+            existingItem.qty += 1;
+        } else {
+            const item = {
+                id: itemIdentifier,
+                productId: productId,
+                img: product.img,
+                price: product.price,
+                name: product.name,
+                size: size,
+                qty: 1
+            };
+            cart.push(item);
+        }
+        
+        saveCart();
+        updateCartCount();
+        alert(`Added ${size} ${product.name} to cart!`);
+        closeImgDetails();
+    }
+    
+    function removeItemFromCart(index) {
+        cart.splice(index, 1);
+        saveCart();
+        updateCartCount();
+        renderCart();
+    }
+
+    function renderCart() {
+        const cartList = document.getElementById('cart-items-list');
+        const emptyMessage = document.getElementById('empty-cart-message');
+        const checkoutBtn = document.getElementById('checkout-btn');
+        let totalPrice = 0;
+        
+        cartList.innerHTML = ''; 
+
+        if (cart.length === 0) {
+            emptyMessage.style.display = 'block';
+            checkoutBtn.disabled = true;
+        } else {
+            emptyMessage.style.display = 'none';
+            checkoutBtn.disabled = false;
+            
+            cart.forEach((item, index) => {
+                const itemElement = document.createElement('div');
+                const totalItemPrice = item.price * item.qty;
+                totalPrice += totalItemPrice;
+                
+                itemElement.style.cssText = 'display: flex; gap: 10px; margin-bottom: 10px; border-bottom: 1px dashed #ddd; padding-bottom: 10px; align-items: center;';
+                itemElement.innerHTML = `
+                    <img src="${item.img}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;">
+                    <div style="flex-grow: 1;">
+                        <p style="margin: 0; font-weight: bold; font-size: 0.9em;">${item.name || 'Product'}</p>
+                        <p style="margin: 0; font-size: 0.8em;">Size: ${item.size} | Qty: ${item.qty}</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <p style="margin: 0; font-weight: bold; color: green; font-size: 0.9em;">₹${totalItemPrice.toFixed(2)}</p>
+                        <a onclick="removeItemFromCart(${index})" style="color: red; font-size: 0.7em; cursor: pointer;">Remove</a>
+                    </div>
+                `;
+                cartList.appendChild(itemElement);
+            });
+        }
+
+        document.getElementById('cart-total-price').innerText = totalPrice.toFixed(2);
+    }
+
+    function openCartPopup() {
+        renderCart();
+        document.getElementById('cart-popup').style.display = 'flex';
+    }
+
+    function closeCartPopup() {
+        document.getElementById('cart-popup').style.display = 'none';
+    }
+
+    // --- PRODUCT DETAIL HANDLERS ---
+    function showDetails(productId){
+        const product = products.find(p => p.id === productId);
+        if (!product) {
+            alert('Product details not found.');
+            return;
+        }
+        
+        document.getElementById('detail-img').src = product.img;
+        document.getElementById('detail-name').innerText = product.name;
+        document.getElementById('detail-price').innerText = 'Price: ₹' + product.price;
+        document.getElementById('detail-product-id').value = product.id; 
+        document.getElementById('img-details-popup').style.display = 'flex';
+    }
+    
+    function closeImgDetails(){ document.getElementById('img-details-popup').style.display = 'none'; }
+    
+    function handleAddToCart() {
+        const productId = parseInt(document.getElementById('detail-product-id').value);
+        const size = document.getElementById('detail-size').value;
+        
+        addItemToCart(productId, size);
+        openCartPopup();
+    }
+    
+    function handleBuyNow() {
+        const productId = parseInt(document.getElementById('detail-product-id').value);
+        const size = document.getElementById('detail-size').value;
+        const product = products.find(p => p.id === productId);
+        
+        if (!product) return;
+
+        cart = []; // Clear cart
+        
+        const itemIdentifier = productId + size;
+        cart.push({
+            id: itemIdentifier,
+            productId: productId,
+            img: product.img,
+            price: product.price,
+            name: product.name,
+            size: size,
+            qty: 1
+        });
+
+        saveCart();
+        updateCartCount();
+        
+        alert(`Buying ${product.name} now. Proceeding to checkout.`);
+        
+        closeImgDetails(); 
+        openCheckoutForm(); 
+    }
+
+    function openCheckoutForm() {
+        if (cart.length === 0) {
+            alert('Your cart is empty. Add items before checking out.');
+            return;
+        }
+        closeCartPopup();
+        document.getElementById('popup').style.display = 'flex';
+    }
+
+    // --- ADMIN/LOGIN HANDLERS ---
+    function openAdminPage() {
+        if (localStorage.getItem('isAdmin') === 'true') {
+            document.getElementById('main-shop-content').style.display = 'none';
+            document.getElementById('admin-page').style.display = 'flex';
+            renderAdminProductList();
+            window.scrollTo(0,0);
+        }
+    }
+    
+    function openShopContent() {
+        document.getElementById('main-shop-content').style.display = 'block';
+        document.getElementById('admin-page').style.display = 'none';
+        window.scrollTo(0,0);
+    }
+
+    function updateHeaderDisplay() {
+      const loginArea = document.getElementById('login-area');
+      const userEmail = localStorage.getItem('userEmail');
+      const isAdmin = localStorage.getItem('isAdmin') === 'true';
+
+      if (userEmail) {
+        let headerHtml = `
+          <div style="display: flex; align-items: center; justify-content: flex-end; gap: 10px; font-weight: 600;">
+            <span style="font-size: 1.2em;">👤</span>
+            <span style="font-size: 14px;">${userEmail}</span>
+        `;
+        
+        if (isAdmin) {
+            headerHtml += `<a onclick="openAdminPage()" style="cursor: pointer; color: #007bff; text-decoration: underline;">Admin Dashboard</a> | `;
+        }
+
+        headerHtml += `
+            <a onclick="logout()" style="cursor: pointer; color: #cc0000; text-decoration: underline;">Logout</a>
+          </div>
+        `;
+        loginArea.innerHTML = headerHtml;
+
+        if (isAdmin) {
+            document.getElementById('main-shop-content').style.display = 'none';
+            document.getElementById('admin-page').style.display = 'flex';
+            renderAdminProductList();
+        } else {
+            document.getElementById('main-shop-content').style.display = 'block';
+            document.getElementById('admin-page').style.display = 'none';
+        }
+
+      } else {
+        loginArea.innerHTML = `
+          <a onclick="openLoginPopup()" style="cursor: pointer;">Login / Register</a>
+        `;
+        document.getElementById('main-shop-content').style.display = 'block';
+        document.getElementById('admin-page').style.display = 'none';
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('userName');
+      localStorage.removeItem('userEmail');
+      localStorage.removeItem('isAdmin'); 
+      updateHeaderDisplay();
+      alert('You have been logged out.');
+    }
+    
+    // LOGIN POPUP HANDLERS
+    function openLoginPopup(){ document.getElementById('login-popup').style.display = 'flex'; }
+    function closeLoginPopup(){ document.getElementById('login-popup').style.display = 'none'; }
+    
+    function handleLoginSubmit(){
+      const name = document.getElementById('login-name').value.trim();
+      const number = document.getElementById('login-number').value.trim();
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value.trim(); 
+
+      if(!name || !number || !password) { 
+        alert('Please enter your Name, Mobile Number, and Password.');
+        return;
+      }
+
+      // --- SPECIAL ADMIN LOGIN CHECK ---
+      const ADMIN_NAME = 'litta';
+      const ADMIN_EMAIL = 'Ljboutique@gmail.com';
+      const ADMIN_PASS = 'Lj@litta123';
+      
+      if (name === ADMIN_NAME && email === ADMIN_EMAIL && password === ADMIN_PASS) {
+          localStorage.setItem('userName', ADMIN_NAME);
+          localStorage.setItem('userEmail', ADMIN_EMAIL);
+          localStorage.setItem('isAdmin', 'true'); 
+          
+          updateHeaderDisplay();
+          closeLoginPopup();
+          
+          alert('Admin Login Successful! Redirecting to Dashboard.');
+          return;
+      }
+      // --- END SPECIAL ADMIN LOGIN CHECK ---
+      
+      // Standard User Login/Registration flow
+      const displayEmail = email || 'Guest'; 
+      
+      localStorage.setItem('userName', name);
+      localStorage.setItem('userEmail', displayEmail);
+      localStorage.removeItem('isAdmin'); 
+
+      updateHeaderDisplay();
+      closeLoginPopup();
+    }
+    
     // Navigation handlers
     document.getElementById('open-bestsellers').addEventListener('click', () => {
       document.querySelector('.best-sellers').style.display = 'none';
@@ -188,33 +682,10 @@
       document.getElementById('bestseller-page').style.display = 'block';
     });
 
-    // Image details popup
-    function showDetails(img, price){
-      document.getElementById('detail-img').src = img;
-      document.getElementById('detail-price').innerText = 'Price: ₹' + price;
-      document.getElementById('img-details-popup').style.display = 'flex';
-    }
-    function closeImgDetails(){ document.getElementById('img-details-popup').style.display = 'none'; }
-
-    // Open buy/address popup from details
-    function openBuyNow(){
-      const selectedSize = document.getElementById('detail-size').value;
-      document.getElementById('popup-size').innerText = 'Size: ' + selectedSize;
-      document.getElementById('popup-img').src = document.getElementById('detail-img').src;
-      document.getElementById('popup-price').innerText = document.getElementById('detail-price').innerText;
-      document.getElementById('img-details-popup').style.display = 'none';
-      document.getElementById('popup').style.display = 'flex';
-    }
-
     function closePopup(){ document.getElementById('popup').style.display = 'none'; }
 
-    // Build WhatsApp message and open
+    // Build WhatsApp message 
     function buildWhatsAppMessage(){
-      // Get the full URL of the image currently displayed in the popup
-      const img_full_url = document.getElementById('popup-img').src || '';
-      
-      const size = (document.getElementById('popup-size').innerText || '').replace('Size: ','');
-      const priceText = (document.getElementById('popup-price').innerText || '').replace('Price: ₹','');
       const name = document.getElementById('addr-name').value || '';
       const number = document.getElementById('addr-number').value || '';
       const district = document.getElementById('addr-district').value || '';
@@ -222,19 +693,24 @@
       const post = document.getElementById('addr-post').value || '';
       const pincode = document.getElementById('addr-pincode').value || '';
       const house = document.getElementById('addr-house').value || '';
-      const qty = document.getElementById('addr-qty').value || '1';
-
-      // Use the filename for product name
-      const productName = img_full_url.split('/').pop() || 'Product';
       const datetime = new Date().toLocaleString();
-
+      
       let msg = '🛍 *NEW ORDER*\n\n';
-      msg += `*Product:* ${productName}\n`;
-      msg += `*Size:* ${size}\n`;
-      msg += `*Quantity:* ${qty}\n`;
-      msg += `*Price:* ₹${priceText}\n`;
-      // Includes the image link in the message
-      msg += `🔗 *Image Link (must be hosted online to view):* ${img_full_url}\n\n`;
+      let totalItemsPrice = 0;
+      
+      msg += '*Order Details:*\n';
+      
+      // Iterate over the cart to build the order details
+      cart.forEach((item, index) => {
+          const itemPrice = item.price * item.qty;
+          totalItemsPrice += itemPrice;
+          msg += ` - Product ${index + 1}: ${item.name} (ID: ${item.productId})\n`;
+          msg += `   Size: ${item.size} | Qty: ${item.qty} | Subtotal: ₹${itemPrice.toFixed(2)}\n`;
+          msg += `   🔗 Image File Name: ${item.img}\n`;
+      });
+      
+      msg += `\n*GRAND TOTAL:* ₹${totalItemsPrice.toFixed(2)}\n\n`;
+      
       msg += '📦 *Delivery Address*\n';
       msg += `Name: ${name}\n`;
       msg += `Mobile: ${number}\n`;
@@ -257,7 +733,7 @@
       return true;
     }
 
-    // Send actions
+    // Send actions (final buttons on address form)
     document.getElementById('send-wa-btn').addEventListener('click', () => {
       if(!validateOrder()) return;
       if(!confirm('Do you want to send this order to WhatsApp?')) return;
@@ -267,9 +743,14 @@
 
     document.getElementById('buy-now-btn').addEventListener('click', () => {
       if(!validateOrder()) return;
-      const encoded = buildWhatsAppMessage();
+      const encoded = buildWhatsAppMessage(); 
       window.open(`https://wa.me/9539680161?text=${encoded}`);
     });
+
+    // Run initialization
+    updateHeaderDisplay();
+    updateCartCount();
+    renderProducts(); 
 
   </script>
 </body>
