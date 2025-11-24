@@ -5,7 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lj Boutique</title>
   <style>
-    body { margin: 0; font-family: Arial, sans-serif; }
+    body { 
+        margin: 0; 
+        font-family: Arial, sans-serif;
+        /* STICKY FOOTER: Body is the flex container */
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* NEW: Container to push the footer down */
+    .content-wrapper {
+        flex-grow: 1; /* This element takes up all available vertical space */
+        display: flex; /* Make the wrapper a flex container itself */
+        flex-direction: column; /* Stack its children (sections) vertically */
+    }
+
     .top-strip, .main-strip { display: grid; padding: 10px 20px; align-items:center; }
     .top-strip { grid-template-columns: 1fr 1fr; background: #f1f1f1; }
     .main-strip { grid-template-columns: 1fr 1fr 1fr; background: #fff; border-bottom:1px solid #eee; }
@@ -14,7 +29,14 @@
     .brand { text-align:center; font-size:24px; font-weight:bold; }
     .cart-icon { text-align:right; font-size:20px; }
 
-    .welcome-section { display:grid; grid-template-columns:1fr 1fr; padding:40px 20px; background:#fff; }
+    .welcome-section { 
+        /* Removing old grid, using flex properties from content-wrapper */
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        background:white;
+        padding:40px 0;
+    }
     .welcome-left { display:flex; flex-direction:column; justify-content:center; gap:20px }
     .welcome-left h1 { margin:0; font-size:32px }
     .welcome-left button { padding:12px 20px; border:none; background:black; color:white; cursor:pointer; font-size:16px }
@@ -37,10 +59,9 @@
 
     /* popup basic styling */
     .overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); justify-content:center; align-items:center; z-index:9999 }
-    /* CHANGE: Added max-height and overflow-y: auto to .card to enable scrolling */
     .card { background:white; border-radius:8px; padding:20px; width:90%; max-width:700px; max-height: 90vh; overflow-y: auto; }
     .small-card { max-width:420px }
-    .close-btn { position:absolute; top:10px; right:10px; background:#000; color:#fff; border:none; padding:6px 10px; cursor:pointer; z-index: 10000; } /* Added z-index to close-btn */
+    .close-btn { position:absolute; top:10px; right:10px; background:#000; color:#fff; border:none; padding:6px 10px; cursor:pointer; z-index: 10000; } 
     .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:20px }
     input, select { padding:8px; border:1px solid #ccc; border-radius:4px }
     button.primary { padding:12px; background:black; color:white; border:none; cursor:pointer }
@@ -65,53 +86,55 @@
     </div>
   </header>
 
-  <section class="welcome-section" style="
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    background:white;
-    padding:40px 0;
-">
-    <div style="text-align:center;">
-        <img src="logo.jpeg" 
-             alt="Logo" 
-             style="width:320px; height:auto; display:block; margin:0 auto;">
-    </div>
-</section>
+  <div class="content-wrapper">
+
+    <section class="welcome-section" style="
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      background:white;
+      padding:40px 0;
+  ">
+      <div style="text-align:center;">
+          <img src="logo.jpeg" 
+              alt="Logo" 
+              style="width:320px; height:auto; display:block; margin:0 auto;">
+      </div>
+    </section>
 
 
-  <section class="best-sellers">
-    <h2>OUR BEST SELLERS</h2>
-    <p>Don't Miss Out</p>
-    <div class="gallery">
+    <section class="best-sellers">
+      <h2>OUR BEST SELLERS</h2>
+      <p>Don't Miss Out</p>
+      <div class="gallery">
+        <div class="product-card" onclick="showDetails('model1.jpg',999)"><img src="model1.jpg" alt="product1"><p>₹999</p></div>
+        <div class="product-card" onclick="showDetails('model2.jpg',1299)"><img src="model2.jpg" alt="product2"><p>₹1299</p></div>
+        <div class="product-card" onclick="showDetails('Box cut .jpg',1199)"><img src="Box cut .jpg" alt="product3"><p>₹1199</p></div>
+        <div class="product-card" onclick="showDetails('churidhar model.jpg',1499)"><img src="churidhar model.jpg" alt="product4"><p>₹1499</p></div>
+      </div>
+      <div class="shop-bestsellers" id="open-bestsellers">Shop Best Sellers</div>
+    </section>
+
+    <div id="bestseller-page" style="display:none; padding:40px 20px;">
+      <h2>BEST SELLERS</h2>
+      <div class="gallery" id="product-list">
+        <div class="product-card" onclick="showDetails('model5.jpg',999)"><img src="model5.jpg" alt="p1"><p>₹999</p></div>
+        <div class="product-card" onclick="showDetails('model6.jpg',1299)"><img src="model6.jpg" alt="p2"><p>₹1299</p></div>
+        <div class="product-card" onclick="showDetails('model7.jpg',1199)"><img src="model7.jpg" alt="p3"><p>₹1199</p></div>
+        <div class="product-card" onclick="showDetails('model1.jpg',1499)"><img src="model1.jpg" alt="p4"><p>₹1499</p></div>
       <div class="product-card" onclick="showDetails('model1.jpg',999)"><img src="model1.jpg" alt="product1"><p>₹999</p></div>
-      <div class="product-card" onclick="showDetails('model2.jpg',1299)"><img src="model2.jpg" alt="product2"><p>₹1299</p></div>
-      <div class="product-card" onclick="showDetails('Box cut .jpg',1199)"><img src="Box cut .jpg" alt="product3"><p>₹1199</p></div>
-      <div class="product-card" onclick="showDetails('churidhar model.jpg',1499)"><img src="churidhar model.jpg" alt="product4"><p>₹1499</p></div>
+        <div class="product-card" onclick="showDetails('model2.jpg',1299)"><img src="model2.jpg" alt="product2"><p>₹1299</p></div>
+        <div class="product-card" onclick="showDetails('Box cut .jpg',1199)"><img src="Box cut .jpg" alt="product3"><p>₹1199</p></div>
+        <div class="product-card" onclick="showDetails('churidhar model.jpg',1499)"><img src="churidhar model.jpg" alt="product4"><p>₹1499</p></div>
+      </div>
     </div>
-    <div class="shop-bestsellers" id="open-bestsellers">Shop Best Sellers</div>
-  </section>
-
+  </div> 
   <footer>
     <h3>Lj Boutique</h3>
     <p>Phone: +91 XXXXX XXXXX</p>
     <p>WhatsApp: +91 XXXXX XXXXX</p>
     <p>Email: example@mail.com</p>
   </footer>
-
-  <div id="bestseller-page" style="display:none; padding:40px 20px;">
-    <h2>BEST SELLERS</h2>
-    <div class="gallery" id="product-list">
-      <div class="product-card" onclick="showDetails('model5.jpg',999)"><img src="model5.jpg" alt="p1"><p>₹999</p></div>
-      <div class="product-card" onclick="showDetails('model6.jpg',1299)"><img src="model6.jpg" alt="p2"><p>₹1299</p></div>
-      <div class="product-card" onclick="showDetails('model7.jpg',1199)"><img src="model7.jpg" alt="p3"><p>₹1199</p></div>
-      <div class="product-card" onclick="showDetails('model1.jpg',1499)"><img src="model1.jpg" alt="p4"><p>₹1499</p></div>
-	  <div class="product-card" onclick="showDetails('model1.jpg',999)"><img src="model1.jpg" alt="product1"><p>₹999</p></div>
-      <div class="product-card" onclick="showDetails('model2.jpg',1299)"><img src="model2.jpg" alt="product2"><p>₹1299</p></div>
-      <div class="product-card" onclick="showDetails('Box cut .jpg',1199)"><img src="Box cut .jpg" alt="product3"><p>₹1199</p></div>
-      <div class="product-card" onclick="showDetails('churidhar model.jpg',1499)"><img src="churidhar model.jpg" alt="product4"><p>₹1499</p></div>
-    </div>
-  </div>
 
   <div id="img-details-popup" class="overlay">
     <div class="card small-card" style="position:relative;">
@@ -210,7 +233,7 @@
       msg += `*Size:* ${size}\n`;
       msg += `*Quantity:* ${qty}\n`;
       msg += `*Price:* ₹${priceText}\n`;
-      // UPDATED LINE: Includes the image link in the message
+      // Includes the image link in the message
       msg += `🔗 *Image Link (must be hosted online to view):* ${img_full_url}\n\n`;
       msg += '📦 *Delivery Address*\n';
       msg += `Name: ${name}\n`;
