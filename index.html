@@ -1,150 +1,253 @@
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lj Boutique</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lj Boutique</title>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; }
+    .top-strip, .main-strip { display: grid; padding: 10px 20px; align-items:center; }
+    .top-strip { grid-template-columns: 1fr 1fr; background: #f1f1f1; }
+    .main-strip { grid-template-columns: 1fr 1fr 1fr; background: #fff; border-bottom:1px solid #eee; }
+    .menu { display:flex; gap:20px; }
+    .menu a { text-decoration:none; color:#333; font-weight:600; cursor:pointer }
+    .brand { text-align:center; font-size:24px; font-weight:bold; }
+    .cart-icon { text-align:right; font-size:20px; }
 
-  <link rel="stylesheet" href="styles.css">  
+    .welcome-section { display:grid; grid-template-columns:1fr 1fr; padding:40px 20px; background:#fff; }
+    .welcome-left { display:flex; flex-direction:column; justify-content:center; gap:20px }
+    .welcome-left h1 { margin:0; font-size:32px }
+    .welcome-left button { padding:12px 20px; border:none; background:black; color:white; cursor:pointer; font-size:16px }
+    .welcome-right { background:#f5e9d6; display:flex; justify-content:center; align-items:center }
+
+    .best-sellers { text-align:center; padding:50px 20px }
+    .best-sellers h2 { margin:0; font-size:28px; font-weight:bold }
+    .best-sellers p { margin-top:10px; font-size:18px; color:#555 }
+
+    .gallery { margin:40px auto; display:grid; grid-template-columns: repeat(3, 1fr); gap:20px; max-width:1000px }
+    .product-card { background:#eee; padding:10px; cursor:pointer; text-align:center; border-radius:6px }
+    .product-card img { width:100%; height:auto; display:block }
+    .product-card p { font-weight:bold; margin-top:8px }
+
+    .shop-bestsellers { margin-top:40px; font-size:20px; font-weight:600; text-decoration:underline; cursor:pointer }
+
+    footer { background:#333; color:white; padding:40px 20px }
+    footer h3 { margin:0 0 10px; font-size:22px }
+    footer p { margin:5px 0; font-size:16px }
+
+    /* popup basic styling */
+    .overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); justify-content:center; align-items:center; z-index:9999 }
+    /* CHANGE: Added max-height and overflow-y: auto to .card to enable scrolling */
+    .card { background:white; border-radius:8px; padding:20px; width:90%; max-width:700px; max-height: 90vh; overflow-y: auto; }
+    .small-card { max-width:420px }
+    .close-btn { position:absolute; top:10px; right:10px; background:#000; color:#fff; border:none; padding:6px 10px; cursor:pointer; z-index: 10000; } /* Added z-index to close-btn */
+    .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:20px }
+    input, select { padding:8px; border:1px solid #ccc; border-radius:4px }
+    button.primary { padding:12px; background:black; color:white; border:none; cursor:pointer }
+    button.whatsapp { padding:12px; background:green; color:white; border:none; cursor:pointer }
+  </style>
 </head>
 <body>
-    
-    <!-- NEW ADMIN TOGGLE BUTTON -->
-    <div class="admin-toggle" onclick="toggleSidebar()">
-        <!-- Three dots icon -->
-        <span class="dot"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
+  <header>
+    <div class="top-strip">
+      <div>🔍 Search</div>
+      <div style="text-align:right;">Login / Register</div>
     </div>
-
-    <!-- NEW ADMIN SIDEBAR -->
-    <aside id="adminSidebar" class="sidebar">
-        <div class="sidebar-header">
-            <h2>Admin Panel</h2>
-            <button class="close-btn" onclick="toggleSidebar()">X</button>
-        </div>
-        
-        <!-- Login View -->
-        <div id="loginView" class="admin-view">
-            <div class="admin-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 17a2 2 0 0 0-2-2h-3V7a1 1 0 0 0-1-1H7v2a2 2 0 0 1-2 2H3a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h2a2 2 0 0 1 2 2v2h3a2 2 0 0 0 2-2v-3h3a2 2 0 0 0 2-2z"/><path d="M7 15v-3"/><path d="M7 12v-3"/></svg>
-            </div>
-            <h3>Admin Login</h3>
-            <form id="loginForm" class="login-form">
-                <input type="text" id="adminUsername" placeholder="Username " required>
-                <input type="password" id="adminPassword" placeholder="Password " required>
-                <button type="submit">Login</button>
-            </form>
-            <p id="loginMessage" class="message error-message"></p>
-        </div>
-
-        <!-- Product Addition View (Hidden initially) -->
-        <div id="productAddView" class="admin-view hidden">
-            <h3>Add New Garment</h3>
-            <form id="productAddForm" class="product-form">
-                <input type="text" id="newTitle" placeholder="Title (e.g., Anarkali Suit)" required>
-                <input type="text" id="newImg" placeholder="Image File (e.g., image.jpg)" value="placeholder.jpg" required>
-                <div class="form-row">
-                    <input type="text" id="newRate" placeholder="Rate (e.g., ₹1,200)" required>
-                    <input type="text" id="newPrice" placeholder="Price (optional, e.g., ₹999)">
-                </div>
-                <div class="form-row">
-                    <input type="text" id="newSize" placeholder="Size (e.g., S, M, L)" required>
-                    <input type="text" id="newArtnum" placeholder="ARTNUM (e.g., ANK001)" required>
-                </div>
-                <input type="text" id="newStyle" placeholder="Style (e.g., A-line, Straight, Box cut)" required>
-                <input type="text" id="newMaterial" placeholder="Material (e.g., Pure Cotton, Silk)">
-
-                <button type="submit" class="submit-btn">Add Product to Gallery</button>
-            </form>
-            <p id="productAddMessage" class="message success-message"></p>
-            <button class="logout-btn" onclick="logoutAdmin()">Logout</button>
-        </div>
-    </aside>
-
-    <header>
-        <h1>Lj Boutique</h1>
-        <div class="contact">
-            <div>📧 Email: <span>ljboutique@gmail.com</span></div>
-            <div>📞 Phone: <span>9539680161</span></div>
-            <div>📍 Location: <span>Ernakulam</span></div>
-        </div>
-    </header>
-	
-    <!-- Gallery and existing popup below -->
-    <div class="gallery" id="gallery">
-        <!-- Existing Product Items -->
-        <div class="item">
-            <img src="churidhar model.jpg" alt="churidhar model" 
-                 data-size="XXL" 
-                 data-rate="₹320" 
-                 data-material="Gold Ajrakh cotton" 
-                 data-style="churidhar model" />
-				 
-            <div class="title">churidhar modelt</div>
-			<div class="artnumdesc" id="mode1"></div>
-            <div class="price">₹320</div>
-			<div class="artnum">CHRGACRD10</div>
-            <div class="actions">
-                <button onclick="openPopupFromCard(this)">View Details</button>
-            </div>
-        </div>
-
-        <div class="item">
-            <img src="Round yoke Churidhar model.jpg" alt="Round yoke Churidhar" 
-                 data-size="Medium" 
-                 data-rate="₹290" 
-                 data-material="cotton meterial (vardhaman)" 
-                 data-style="Round yoke" />
-            <div class="title">Round yoke</div>
-            <div class="price">₹290</div>
-			<div class="artnum">CHRGACRD10</div>
-            <div class="actions">
-                <button onclick="openPopupFromCard(this)">View Details</button>
-            </div>
-        </div>
-
-        <div class="item">
-            <img src="Box cut .jpg" alt="Box cut churidhar model" 
-                 data-size="Medium" 
-                 data-rate="₹290" 
-                 data-material="cotton (RahulTexo Print)" 
-                 data-style="Box cut" />
-            <div class="title">Box cut churidhar model</div>
-            <div class="price">₹290</div>
-			<div class="artnum">CHRGACRD10</div>
-            <div class="actions">
-                <button onclick="openPopupFromCard(this)">View Details</button>
-            </div>
-        </div>
-		
-		<div class="item">
-            <img src="churidhar type.jpg" alt="churidhar type" 
-                 data-size="XL" 
-                 data-rate="₹310" 
-                 data-material="Ajrakh front Cotton" 
-                 data-style="churidhar type" />
-            <div class="title">churidhar type</div>
-            <div class="price">₹310</div>
-			<div class="artnum">CHRGACRD10</div>
-            <div class="actions">
-                  <button onclick="openPopupFromCard(this)">View Details</button>
-           </div>
-        </div>
-        
-    </div> 
-    
-    <div id="popup" role="dialog" aria-modal="true" aria-hidden="true">
-        <div class="popup-content">
-            <img id="popup-img" src="" alt="Product image" />
-            <div class="details" id="popup-details">
-            </div>
-        </div>
+    <div class="main-strip">
+      <div class="menu">
+        <a id="menu-shop">Shop</a>
+        <a>Sale</a>
+        <a>Customer Care</a>
+        <a>Stores</a>
+      </div>
+      <div class="brand">Lj Boutique</div>
+      <div class="cart-icon">🛒</div>
     </div>
+  </header>
 
-    <!-- Load Font Awesome for the admin icon -->
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-    <script src="scripts.js"></script> 
-	 
+  <section class="welcome-section" style="
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:white;
+    padding:40px 0;
+">
+    <div style="text-align:center;">
+        <img src="logo.jpeg" 
+             alt="Logo" 
+             style="width:320px; height:auto; display:block; margin:0 auto;">
+    </div>
+</section>
+
+
+  <section class="best-sellers">
+    <h2>OUR BEST SELLERS</h2>
+    <p>Don't Miss Out</p>
+    <div class="gallery">
+      <div class="product-card" onclick="showDetails('model1.jpg',999)"><img src="model1.jpg" alt="product1"><p>₹999</p></div>
+      <div class="product-card" onclick="showDetails('model2.jpg',1299)"><img src="model2.jpg" alt="product2"><p>₹1299</p></div>
+      <div class="product-card" onclick="showDetails('Box cut .jpg',1199)"><img src="Box cut .jpg" alt="product3"><p>₹1199</p></div>
+      <div class="product-card" onclick="showDetails('churidhar model.jpg',1499)"><img src="churidhar model.jpg" alt="product4"><p>₹1499</p></div>
+    </div>
+    <div class="shop-bestsellers" id="open-bestsellers">Shop Best Sellers</div>
+  </section>
+
+  <footer>
+    <h3>Lj Boutique</h3>
+    <p>Phone: +91 XXXXX XXXXX</p>
+    <p>WhatsApp: +91 XXXXX XXXXX</p>
+    <p>Email: example@mail.com</p>
+  </footer>
+
+  <div id="bestseller-page" style="display:none; padding:40px 20px;">
+    <h2>BEST SELLERS</h2>
+    <div class="gallery" id="product-list">
+      <div class="product-card" onclick="showDetails('model5.jpg',999)"><img src="model5.jpg" alt="p1"><p>₹999</p></div>
+      <div class="product-card" onclick="showDetails('model6.jpg',1299)"><img src="model6.jpg" alt="p2"><p>₹1299</p></div>
+      <div class="product-card" onclick="showDetails('model7.jpg',1199)"><img src="model7.jpg" alt="p3"><p>₹1199</p></div>
+      <div class="product-card" onclick="showDetails('model1.jpg',1499)"><img src="model1.jpg" alt="p4"><p>₹1499</p></div>
+	  <div class="product-card" onclick="showDetails('model1.jpg',999)"><img src="model1.jpg" alt="product1"><p>₹999</p></div>
+      <div class="product-card" onclick="showDetails('model2.jpg',1299)"><img src="model2.jpg" alt="product2"><p>₹1299</p></div>
+      <div class="product-card" onclick="showDetails('Box cut .jpg',1199)"><img src="Box cut .jpg" alt="product3"><p>₹1199</p></div>
+      <div class="product-card" onclick="showDetails('churidhar model.jpg',1499)"><img src="churidhar model.jpg" alt="product4"><p>₹1499</p></div>
+    </div>
+  </div>
+
+  <div id="img-details-popup" class="overlay">
+    <div class="card small-card" style="position:relative;">
+      <button class="close-btn" onclick="closeImgDetails()">X</button>
+      <img id="detail-img" src="" style="width:100%; height:auto; margin-bottom:12px;" />
+      <p id="detail-price" style="font-weight:bold; margin:6px 0"></p>
+      <h4>Select Size</h4>
+      <select id="detail-size" style="width:100%; margin-bottom:12px;">
+        <option>M</option><option>L</option><option>XL</option><option>XXL</option><option>XXXL</option>
+      </select>
+      <button class="primary" onclick="openBuyNow()">Buy Now</button>
+    </div>
+  </div>
+
+  <div id="popup" class="overlay">
+    <div class="card" style="position:relative;">
+      <button class="close-btn" onclick="closePopup()">X</button>
+      <div class="grid-2">
+        <div>
+          <img id="popup-img" src="" style="width:100%; height:auto; margin-bottom:8px;" />
+          <p id="popup-size" style="margin:6px 0"></p>
+          <p id="popup-price" style="margin:6px 0"></p>
+        </div>
+        <div>
+          <h3>Delivery Address</h3>
+          <input id="addr-name" placeholder="Name" style="width:100%; margin-bottom:8px;" />
+          <input id="addr-number" placeholder="Number" style="width:100%; margin-bottom:8px;" />
+          <input id="addr-district" placeholder="District" style="width:100%; margin-bottom:8px;" />
+          <input id="addr-state" placeholder="State" style="width:100%; margin-bottom:8px;" />
+          <input id="addr-post" placeholder="Post" style="width:100%; margin-bottom:8px;" />
+          <input id="addr-pincode" placeholder="Pincode" style="width:100%; margin-bottom:8px;" />
+          <input id="addr-house" placeholder="House Number" style="width:100%; margin-bottom:8px;" />
+          <input id="addr-qty" type="number" min="1" value="1" placeholder="Quantity" style="width:100%; margin-bottom:8px;" />
+          <button class="primary" id="buy-now-btn">Buy Now</button>
+          <button class="whatsapp" id="send-wa-btn" style="margin-top:8px;">Send on WhatsApp</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Navigation handlers
+    document.getElementById('open-bestsellers').addEventListener('click', () => {
+      document.querySelector('.best-sellers').style.display = 'none';
+      document.getElementById('bestseller-page').style.display = 'block';
+      window.scrollTo(0,0);
+    });
+
+    document.getElementById('menu-shop').addEventListener('click', () => {
+      document.querySelector('.best-sellers').style.display = 'none';
+      document.getElementById('bestseller-page').style.display = 'block';
+    });
+
+    // Image details popup
+    function showDetails(img, price){
+      document.getElementById('detail-img').src = img;
+      document.getElementById('detail-price').innerText = 'Price: ₹' + price;
+      document.getElementById('img-details-popup').style.display = 'flex';
+    }
+    function closeImgDetails(){ document.getElementById('img-details-popup').style.display = 'none'; }
+
+    // Open buy/address popup from details
+    function openBuyNow(){
+      const selectedSize = document.getElementById('detail-size').value;
+      document.getElementById('popup-size').innerText = 'Size: ' + selectedSize;
+      document.getElementById('popup-img').src = document.getElementById('detail-img').src;
+      document.getElementById('popup-price').innerText = document.getElementById('detail-price').innerText;
+      document.getElementById('img-details-popup').style.display = 'none';
+      document.getElementById('popup').style.display = 'flex';
+    }
+
+    function closePopup(){ document.getElementById('popup').style.display = 'none'; }
+
+    // Build WhatsApp message and open
+    function buildWhatsAppMessage(){
+      // Get the full URL of the image currently displayed in the popup
+      const img_full_url = document.getElementById('popup-img').src || '';
+      
+      const size = (document.getElementById('popup-size').innerText || '').replace('Size: ','');
+      const priceText = (document.getElementById('popup-price').innerText || '').replace('Price: ₹','');
+      const name = document.getElementById('addr-name').value || '';
+      const number = document.getElementById('addr-number').value || '';
+      const district = document.getElementById('addr-district').value || '';
+      const state = document.getElementById('addr-state').value || '';
+      const post = document.getElementById('addr-post').value || '';
+      const pincode = document.getElementById('addr-pincode').value || '';
+      const house = document.getElementById('addr-house').value || '';
+      const qty = document.getElementById('addr-qty').value || '1';
+
+      // Use the filename for product name
+      const productName = img_full_url.split('/').pop() || 'Product';
+      const datetime = new Date().toLocaleString();
+
+      let msg = '🛍 *NEW ORDER*\n\n';
+      msg += `*Product:* ${productName}\n`;
+      msg += `*Size:* ${size}\n`;
+      msg += `*Quantity:* ${qty}\n`;
+      msg += `*Price:* ₹${priceText}\n`;
+      // UPDATED LINE: Includes the image link in the message
+      msg += `🔗 *Image Link (must be hosted online to view):* ${img_full_url}\n\n`;
+      msg += '📦 *Delivery Address*\n';
+      msg += `Name: ${name}\n`;
+      msg += `Mobile: ${number}\n`;
+      msg += `District: ${district}\n`;
+      msg += `State: ${state}\n`;
+      msg += `Post: ${post}\n`;
+      msg += `Pincode: ${pincode}\n`;
+      msg += `House No: ${house}\n\n`;
+      msg += `🕒 *Order Time:* ${datetime}`;
+
+      return encodeURIComponent(msg);
+    }
+
+    // Validate required fields (simple)
+    function validateOrder(){
+      const name = document.getElementById('addr-name').value.trim();
+      const number = document.getElementById('addr-number').value.trim();
+      if(!name){ alert('Please enter your name'); return false; }
+      if(!number){ alert('Please enter your mobile number'); return false; }
+      return true;
+    }
+
+    // Send actions
+    document.getElementById('send-wa-btn').addEventListener('click', () => {
+      if(!validateOrder()) return;
+      if(!confirm('Do you want to send this order to WhatsApp?')) return;
+      const encoded = buildWhatsAppMessage();
+      window.open(`https://wa.me/9539680161?text=${encoded}`);
+    });
+
+    document.getElementById('buy-now-btn').addEventListener('click', () => {
+      if(!validateOrder()) return;
+      const encoded = buildWhatsAppMessage();
+      window.open(`https://wa.me/9539680161?text=${encoded}`);
+    });
+
+  </script>
 </body>
 </html>
