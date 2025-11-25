@@ -74,7 +74,8 @@
         object-fit: cover;
         border-radius: 4px;
     }
-    .admin-product-item input {
+    .admin-product-item input[type="text"], 
+    .admin-product-item input[type="number"] {
         flex-grow: 1;
         max-width: 150px;
     }
@@ -85,6 +86,17 @@
         border: none;
         border-radius: 4px;
         cursor: pointer;
+    }
+    /* Style for delete button */
+    .admin-product-item button.delete-btn {
+        background: #cc0000;
+    }
+    /* Style for the select checkbox */
+    .admin-product-item input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        margin: 0;
+        min-width: 20px; /* Ensure it doesn't shrink */
     }
     .form-group {
         margin-bottom: 15px;
@@ -181,9 +193,13 @@
             
             <hr>
 
-            <h3>Edit Existing Products (Gallery Update)</h3>
+            <h3>Edit / Delete Existing Products</h3>
             <p style="font-size: 0.9em; color: #555;">*Enter the exact file name (e.g., `modelX.jpg`) for the image source to edit.</p>
             
+            <div style="text-align:right; margin-bottom: 15px;">
+                <button class="primary delete-btn" onclick="deleteSelectedProducts()" style="padding: 8px 12px;">Delete Selected Products</button>
+            </div>
+
             <div id="admin-product-list">
                 </div>
 
@@ -336,6 +352,7 @@
         const adminList = document.getElementById('admin-product-list');
         adminList.innerHTML = products.map(product => `
             <div class="admin-product-item">
+                <input type="checkbox" class="product-select" data-product-id="${product.id}">
                 <img src="${product.img}" alt="${product.name}">
                 <div style="flex-basis: 150px;">
                     <strong>ID: ${product.id}</strong><br>
@@ -343,7 +360,8 @@
                 </div>
                 <input type="text" id="admin-img-${product.id}" value="${product.img}" placeholder="Image File Name" style="flex-grow: 1;">
                 <input type="number" id="admin-price-${product.id}" value="${product.price}" placeholder="Price (₹)" min="100" style="max-width: 100px;">
-                <button onclick="updateProduct(${product.id})">Update Product</button>
+                <button onclick="updateProduct(${product.id})">Update</button>
+                <button class="delete-btn" onclick="deleteProduct(${product.id})">Delete</button>
             </div>
         `).join('');
     }
@@ -402,6 +420,46 @@
 
         alert(`New Product "${newName}" (ID: ${newId}) added successfully!`);
     }
+
+    function deleteProduct(productId) {
+        if (confirm(`Are you sure you want to delete Product ID ${productId}? This action cannot be undone.`)) {
+            const initialLength = products.length;
+            // Filter out the product with the given ID
+            products = products.filter(p => p.id !== productId);
+            
+            if (products.length < initialLength) {
+                saveProducts();
+                alert(`Product ID ${productId} has been deleted.`);
+            } else {
+                alert(`Error: Product ID ${productId} not found.`);
+            }
+        }
+    }
+
+    function deleteSelectedProducts() {
+        const checkboxes = document.querySelectorAll('#admin-product-list .product-select:checked');
+        
+        if (checkboxes.length === 0) {
+            alert('Please select at least one product to delete.');
+            return;
+        }
+
+        if (confirm(`Are you sure you want to delete the ${checkboxes.length} selected product(s)?`)) {
+            const idsToDelete = Array.from(checkboxes).map(cb => parseInt(cb.dataset.productId));
+            
+            const initialLength = products.length;
+            // Filter out products whose ID is in the idsToDelete array
+            products = products.filter(p => !idsToDelete.includes(p.id));
+            
+            if (products.length < initialLength) {
+                saveProducts();
+                alert(`${initialLength - products.length} product(s) successfully deleted.`);
+            } else {
+                alert('No products were deleted. IDs may not have matched.');
+            }
+        }
+    }
+
 
     // --- CART DATA AND UTILITIES (Functions remain the same, adapted to use product object) ---
     let cart = JSON.parse(localStorage.getItem('shoppingCart')) || [];
